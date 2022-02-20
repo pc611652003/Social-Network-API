@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { User, Thought } = require('../models');
 
 const userController = {
     getAllUser(req, res) {
@@ -51,6 +51,14 @@ const userController = {
                     return;
                 }
                 res.json(dbUserData);
+                return Thought.deleteMany({ username: dbUserData.username });     
+            })
+            .then(() => {
+                return User.updateMany(
+                    { friends: params.userId },
+                    { $pull: { friends: params.userId } },
+                    { new: true }
+                );
             })
             .catch(err => res.status(400).json(err));
     },
